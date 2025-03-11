@@ -22,23 +22,21 @@ def process_registration_data_last_month_rendim(file_path, reference_date_str):
     
     # Filtrar linhas
     df = df[(df['mes'] >= cutoff_date) & (df['mes'] <= reference_date)].copy()
-    #Selecionar apesas as colunas necessárias para o modelo
-    df_rendim = df[['cpf_servidor', 'mes', 'rendim']]
-    #Se tiver valores com o CPF duplicado para o mesmo mês, somar os valores
-    df_rendim = df_rendim.groupby(['cpf_servidor', 'mes'])['rendim'].sum().reset_index()
-    #Prencer os meses que estão com NA, como "Zero"
-    df_rendim = df_rendim.pivot(index = 'cpf_servidor', columns='mes', values='rendim').reset_index()
-    df_rendim = df_rendim.fillna(0)
-    # Drop para nao contabilizar nas mudancas 
-    df = df.drop('rendim', axis=1)
+    df_rendim = ps.categorizar_rendimentos(df, reference_date )
+    df_rendim = df_rendim.drop('mes', axis=1)
     
 
+    # Calculate Std of Redim by CPF
+    df_std = ps.calculate_std_by_cpf(df)
+    # Drop para nao contabilizar nas mudancas 
+    df = df.drop('rendim', axis=1)
     
     # Filter for reference month
     current_month_data = df[df['mes'] == reference_date].copy()
     current_month_data = (
         ps.track_registration_changes(current_month_data, df, reference_date)
         .pipe(ps.process_service_time)
+        .merge(df_std, on='cpf_servidor', how='left')
         .merge(df_rendim, on='cpf_servidor', how='left')
         .pipe(ps.process_esc_cargo)
         .pipe(ps.process_ingresso_spub)
@@ -76,4 +74,3 @@ def processed_data(brute_data_file_path, reference_date, file_name, tipo: str):
     
     
     return registration_df
-        

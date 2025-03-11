@@ -152,6 +152,49 @@ def calculate_std_by_cpf(df: pd.DataFrame,
     
     return result_df
 
+
+def calculate_mean_by_cpf(df: pd.DataFrame, 
+                        group_col: str = 'cpf_servidor',
+                        value_col: str = 'rendim',
+                        new_col_name: str = 'mean_rendim') -> pd.DataFrame:
+    """
+    Calcula o desvio padrão de uma coluna numérica agrupado por CPF
+    
+    Parâmetros:
+        df (pd.DataFrame): DataFrame original
+        group_col (str): Coluna de agrupamento (padrão: 'cpf_servidor')
+        value_col (str): Coluna numérica para cálculo (padrão: 'rendim')
+        new_col_name (str): Nome da nova coluna (padrão: 'std_rendim')
+    
+    Retorna:
+        pd.DataFrame: DataFrame com duas colunas: group_col e new_col_name
+    
+    Levanta:
+        ValueError: Se as colunas especificadas não existirem
+        TypeError: Se a coluna value_col não for numérica
+    """
+    
+    # Validação das colunas
+    required_cols = {group_col, value_col}
+    missing_cols = required_cols - set(df.columns)
+    if missing_cols:
+        raise ValueError(f"Colunas faltantes: {missing_cols}")
+    
+    # Verificação de tipo numérico
+    if not np.issubdtype(df[value_col].dtype, np.number):
+        raise TypeError(f"Coluna {value_col} deve ser numérica")
+    
+    # Cálculo do desvio padrão
+    result_df = (
+        df
+        .groupby(group_col, as_index=False)
+        [value_col]
+        .std(ddof=1)
+        .rename(columns={value_col: new_col_name})
+    )
+    
+    return result_df
+
 def process_month_column(df: pd.DataFrame, 
                         date_col: str = 'mes',
                         inplace: bool = False) -> pd.DataFrame:
