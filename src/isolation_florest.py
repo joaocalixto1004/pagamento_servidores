@@ -76,4 +76,5 @@ def processed_data(brute_data_file_path, reference_date, file_name, tipo: str):
     
     
     return registration_df
+
         

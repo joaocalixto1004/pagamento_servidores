@@ -971,3 +971,76 @@ def combinar_niveis_escolaridade(
 
     except Exception as e:
             raise RuntimeError(f"Erro na combinação de colunas: {str(e)}") from e
+            
+def padronizar_decimo_terceiro(df: pd.DataFrame, coluna: str = 'rubrica') -> pd.DataFrame:
+    """
+    Padroniza diversas nomenclaturas de décimo terceiro em um DataFrame.
+    
+    Parâmetros:
+    df (pd.DataFrame): DataFrame original
+    coluna (str, opcional): Nome da coluna para aplicar a substituição. 
+                            Se None, aplica em todo o DataFrame.
+                            
+    Retorna:
+    pd.DataFrame: DataFrame com os valores padronizados
+    """
+    
+    termos_decimo_terceiro = [
+        '13 SALARIO - 1/12 - EMP. CLT',
+        '13 SALARIO PM',
+        '13. SALARIO PROPORCIONAL-CLT',
+        '13. SALARIO/CLT',
+        'ABATE TETO 13/GRAT NAT - APOS.',
+        'ABATE TETO 13/GRAT NAT - ATIVO',
+        'ADIANT GRAT NATAL ACERTO AP',
+        'ADIANT.13. SALARIO-CLT',
+        'ADIANT.GRATIF.NATALINA - AP',
+        'ADIANT.GRATIF.NATALINA AT',
+        'ADIANTAMENTO 13 SALARIO - PM',
+        'GRAT. NATALINA PROPORCIONAL',
+        'GRAT.NATAL SUBSTITUICAO/INTER',
+        'GRAT.NATALINA PROPORCIONAL AP',
+        'GRATIFICACAO NATALINA - AP',
+        'GRATIFICAÇÃO NATALINA AT',
+        'MED. SAL. SUBST. 13. E FERIAS'
+    ]
+    
+
+    df[coluna] = df[coluna].str.rstrip()
+    df[coluna] = df[coluna].replace(termos_decimo_terceiro, 'DECIMO TERCEIRO')
+
+    return df
+
+def padronizar_ferias(df: pd.DataFrame, coluna: str = 'rubrica') -> pd.DataFrame:
+    """
+    Padroniza diversas variações de termos relacionados a férias em uma coluna específica de um DataFrame.
+
+    Parâmetros:
+    df (pd.DataFrame): DataFrame original
+    coluna (str): Nome da coluna para aplicar a substituição (padrão = 'rubricas')
+
+    Retorna:
+    pd.DataFrame: DataFrame com os valores da coluna especificada padronizados para 'FERIAS'
+    """
+    
+    termos_ferias = [
+        'ABONO FERIAS CF/88 IND.-CLT',
+        'FERIAS - ABONO PECUNIARIO',
+        'FERIAS - ADICIONAL 1/3',
+        'FERIAS - ADICIONAL 1/3 CLT',
+        'FERIAS - CLT',
+        'FERIAS - INDENIZ/PROPORC - AT',
+        'FERIAS - INDENIZ/VENCIDAS - AT',
+        'FERIAS - REMUNERACAO 1/3 RMI',
+        'FERIAS - RESTITUICAO',
+        'FERIAS EM DOBRO-CLT',
+        'FERIAS INDENIZ. ADIC. 1/3 - AT',
+        'FERIAS INDENIZADAS/PROPORC.',
+        'FERIAS-ANTECIPACAO REMUN.CARGO',
+        'FERIAS-MEDIA HORAS EXTRAS-CLT'
+    ]
+    
+    df[coluna] = df[coluna].str.rstrip()
+    df[coluna] = df[coluna].replace(termos_ferias, 'FERIAS')
+    
+    return df
