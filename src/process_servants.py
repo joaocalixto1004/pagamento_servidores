@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from janitor import clean_names
 from typing import Optional
-from datetime import datetime
+    from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 
@@ -1043,4 +1043,22 @@ def padronizar_ferias(df: pd.DataFrame, coluna: str = 'rubrica') -> pd.DataFrame
     df[coluna] = df[coluna].str.rstrip()
     df[coluna] = df[coluna].replace(termos_ferias, 'FERIAS')
     
+    return df
+
+
+def somar_colunas(df, col_alvo: str = 'rendim', col_adicional:  str='remun', fill_value=None):
+    """
+    Soma os valores de `col_adicional` a `col_alvo` em um DataFrame.
+
+    Parâmetros:
+    - df: DataFrame do pandas.
+    - col_alvo: Nome da coluna que será atualizada.
+    - col_adicional: Nome da coluna a ser somada à `col_alvo`.
+    - fill_value: Valor para substituir NaNs (padrão: None).
+
+    Retorna:
+    - DataFrame com a coluna `col_alvo` atualizada.
+    """
+    # Somar as colunas (tratando NaNs se fill_value for especificado)
+    df[col_alvo] = df[col_alvo].add(df[col_adicional], fill_value=fill_value)
     return df
